@@ -114,13 +114,21 @@ function local(){const L={},rd=c=>ld('dr_'+c,{}),em=c=>(L[c]||[]).forEach(f=>f(O
   return{watch:(c,f)=>{(L[c]=L[c]||[]).push(f);em(c)},
     set:async(c,id,d)=>{const o=rd(c);o[id]={...o[id],...d};sv('dr_'+c,o);em(c)},
     del:async(c,id)=>{const o=rd(c);delete o[id];sv('dr_'+c,o);em(c)}}}
+function dbMsg(e){const c=String(e&&e.code||'').replace('firestore/','');
+  if(c==='local')return'This copy is NOT connected to Firebase, so it only works inside one browser. Upload the version that has your Firebase config.';
+  if(c==='permission-denied')return'Firebase is blocking this. In the Firebase console go to Firestore > Rules and publish test-mode rules (allow read, write: if true).';
+  if(c==='not-found')return'No Firestore database yet. In the Firebase console create one (Build > Firestore Database > Create database, test mode).';
+  if(c==='slow'||c==='unavailable')return'Cannot reach the database. Check that Firestore is created in the Firebase console and that your internet works.';
+  return'Database error: '+(c||(e&&e.message)||'unknown')}
+function dbErr(e){console.error('DB',e);let b=document.getElementById('dbb');if(!b){b=document.createElement('div');b.id='dbb';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99;background:#b3261e;color:#fff;padding:10px 14px;font:600 13px/1.4 system-ui,sans-serif';document.body.appendChild(b)}b.textContent='⚠ '+dbMsg(e)}
 async function initDB(){
-  if(!CFG.projectId)return local();
+  if(!CFG.projectId){if(/^https?:$/.test(location.protocol)&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))setTimeout(()=>dbErr({code:'local'}),300);return local()}
   const A=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
         F=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'),
-        db=F.getFirestore(A.initializeApp(CFG));
-  return{watch:(c,f)=>F.onSnapshot(F.collection(db,c),s=>f(s.docs.map(d=>({id:d.id,...d.data()})))),
-    set:(c,id,d)=>F.setDoc(F.doc(db,c,id),d,{merge:true}),del:(c,id)=>F.deleteDoc(F.doc(db,c,id))}}
+        db=F.initializeFirestore(A.initializeApp(CFG),{experimentalAutoDetectLongPolling:true});
+  return{watch:(c,f)=>F.onSnapshot(F.collection(db,c),s=>f(s.docs.map(d=>({id:d.id,...d.data()}))),e=>dbErr(e)),
+    set:(c,id,d)=>{const t=setTimeout(()=>dbErr({code:'slow'}),8000);F.setDoc(F.doc(db,c,id),d,{merge:true}).then(()=>{clearTimeout(t);const b=document.getElementById('dbb');b&&b.remove()},e=>{clearTimeout(t);dbErr(e)});return Promise.resolve()},
+    del:(c,id)=>{F.deleteDoc(F.doc(db,c,id)).catch(dbErr);return Promise.resolve()}}}
 
 let DB,P=[],O=[],C=[],R=[],N=[],bellOpen=false,ST={name:'Dr Apple',deliveryFee:0,pickupAddress:''},tab='dash',of='todo',rf='pending',imgs=[],opts=[],specs=[],eid=null,cur=null,Q={prod:'',ord:'',ref:'',cpn:''};
 const TABS={dash:'Dashboard',prod:'Products',ord:'Orders',ref:'Refunds',cpn:'Coupons',set:'Settings'};
