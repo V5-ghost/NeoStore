@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dr Apple Admin</title>
+<style>
+:root{color-scheme:light;--bg:#eceef2;--fg:#0b0b0d;--mut:#6c6e77;--glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.86);--bd:rgba(255,255,255,.8);--line:rgba(10,10,25,.08);--sh:0 10px 40px rgba(30,35,60,.10);--b1:rgba(130,145,195,.5);--b2:rgba(255,255,255,.95);--b3:rgba(165,170,205,.5);--ok:#16a34a}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){color-scheme:dark;--bg:#050507;--fg:#f4f4f6;--mut:#9a9ca6;--glass:rgba(255,255,255,.07);--glass2:rgba(24,24,30,.86);--bd:rgba(255,255,255,.13);--line:rgba(255,255,255,.09);--sh:0 10px 40px rgba(0,0,0,.55);--b1:rgba(90,105,175,.4);--b2:rgba(255,255,255,.07);--b3:rgba(70,75,115,.45)}}
+:root[data-t=dark]{color-scheme:dark;--bg:#050507;--fg:#f4f4f6;--mut:#9a9ca6;--glass:rgba(255,255,255,.07);--glass2:rgba(24,24,30,.86);--bd:rgba(255,255,255,.13);--line:rgba(255,255,255,.09);--sh:0 10px 40px rgba(0,0,0,.55);--b1:rgba(90,105,175,.4);--b2:rgba(255,255,255,.07);--b3:rgba(70,75,115,.45)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);letter-spacing:-.01em;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(620px 420px at 8% -5%,var(--b1),transparent 62%),radial-gradient(520px 520px at 105% 35%,var(--b2),transparent 62%),radial-gradient(640px 520px at 25% 108%,var(--b3),transparent 62%)}
+button,input,textarea,select{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer;border:0;background:none;transition:transform .15s,opacity .2s,background .2s}
+button:active{transform:scale(.96)}
+h2,h3{letter-spacing:-.02em;font-weight:700}
+.gl,header,nav,.search,.card,.sh,.stat,.rcard,.note{-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.sd{font-size:12px;color:var(--mut);margin-top:2px}
+.nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:block;background:var(--fg);color:var(--bg);padding:14px 20px;border-radius:30px;font-weight:600;font-size:15px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.btn.o{background:var(--glass);color:var(--fg);border:1px solid var(--bd);box-shadow:none}
+.f{width:100%;padding:13px 15px;border:1px solid var(--bd);border-radius:14px;background:var(--glass);margin-top:8px;font-size:16px;display:block;outline:0;transition:border .2s,box-shadow .2s}
+.f:focus{border-color:var(--fg);box-shadow:0 0 0 3px var(--line)}
+.ov{position:fixed;inset:0;background:rgba(10,10,20,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:20;display:none;justify-content:center}
+.ov.on{display:flex;animation:fd .25s}
+.sh{background:var(--glass2);border:1px solid var(--bd);box-shadow:var(--sh);overflow:auto;animation:up .38s cubic-bezier(.2,.9,.3,1)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:11px 20px;border-radius:24px;font-size:14px;font-weight:500;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:up .3s}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+@keyframes fd{from{opacity:0}}
+.drow{display:flex;justify-content:space-between;gap:14px;padding:11px 0;font-size:14px;border-bottom:1px dashed var(--line)}
+.drow:last-child{border:0}
+.drow span:first-child{color:var(--mut)}.drow span:last-child{text-align:right;font-weight:600}
+header{position:sticky;top:0;z-index:5;padding:calc(14px + env(safe-area-inset-top)) 16px 12px;background:var(--glass);border-bottom:1px solid var(--line)}
+header h1{font-size:19px;letter-spacing:-.03em}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-top:12px;padding:4px;border-radius:24px;background:var(--glass);border:1px solid var(--bd);width:fit-content;max-width:100%;scrollbar-width:none}
+.tabs button{padding:8px 16px;border-radius:20px;color:var(--mut);font-size:14px;font-weight:500;white-space:nowrap}
+.tabs button.on{background:var(--fg);color:var(--bg)}
+main{max-width:880px;margin:0 auto;padding:18px 16px 40px;animation:fd .3s}
+.note{border:1px dashed var(--mut);border-radius:16px;padding:11px 14px;font-size:13px;color:var(--mut);margin-bottom:16px;background:var(--glass)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{border:1px solid var(--bd);background:var(--glass);border-radius:22px;padding:16px;box-shadow:var(--sh)}
+.stat small{color:var(--mut);font-size:12px}.stat b{display:block;font-size:24px;margin-top:6px;letter-spacing:-.03em}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+h2{font-size:19px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-top:8px;border-radius:20px;background:var(--glass);border:1px solid var(--bd);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);transition:transform .2s}
+.row.click{cursor:pointer}.row.click:hover{transform:translateY(-2px)}
+.th{width:52px;height:52px;border-radius:14px;background:var(--line);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--mut)}
+.th img{width:100%;height:100%;object-fit:cover}
+.grow{flex:1;min-width:0}
+.btn{padding:11px 18px;font-size:14px}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--glass2);border:1px solid var(--bd)}
+label{font-size:12px;color:var(--mut);display:block;margin-top:14px;font-weight:500}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--fg);border-radius:12px;padding:3px 9px;white-space:nowrap}
+.ov{align-items:center;padding:14px}
+.sh{width:100%;max-width:480px;max-height:92vh;border-radius:28px;padding:22px}
+.imgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.imgs div{position:relative;width:66px;height:66px;border-radius:14px;overflow:hidden}
+.imgs img{width:100%;height:100%;object-fit:cover}
+.imgs button{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:11px}
+.toast{bottom:28px}
+option{background:var(--bg);color:var(--fg)}
+::placeholder{color:var(--mut);opacity:.85}
+select.f{color:var(--fg)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.chips button{padding:7px 14px;border-radius:18px;border:1px solid var(--bd);background:var(--glass);font-size:13px;font-weight:500}
+.chips button.on{background:var(--fg);color:var(--bg)}
+label.chk{display:flex;gap:10px;align-items:center;margin-top:16px;font-size:14px;color:var(--fg)}
+label.chk input{width:18px;height:18px;margin:0}
+.tg{width:38px;height:38px;border-radius:50%;background:var(--glass);border:1px solid var(--bd);display:grid;place-items:center;flex:none;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.tg svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tg .sun{display:none}
+:root[data-t=dark] .tg .sun{display:block}:root[data-t=dark] .tg .moon{display:none}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]) .tg .sun{display:block}:root:not([data-t=light]) .tg .moon{display:none}}
+.tg.spin svg{animation:tgs .6s cubic-bezier(.2,1.2,.4,1)}
+@keyframes tgs{from{transform:rotate(-120deg) scale(.3);opacity:0}}
+header{padding-inline:max(16px,calc((100% - 560px)/2 + 16px))}
+main{max-width:560px}
+.stats{grid-template-columns:1fr 1fr}
+@media(min-width:700px){.stats{grid-template-columns:1fr 1fr}}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.orow{display:grid;grid-template-columns:1fr 1.5fr 36px;gap:6px;margin-top:6px}
+.orow .f{margin-top:0;padding:10px}
+.sbar{margin:0 0 10px}
+.nt{padding:14px 16px;margin-top:8px;border-radius:20px;background:var(--glass);border:1px solid var(--bd);cursor:pointer;position:relative}
+.nt.un::before{content:"";position:absolute;right:14px;top:17px;width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.nth{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding-right:14px}
+.ntb{font-size:13px;line-height:1.5;margin-top:6px;white-space:pre-wrap}
+.top2{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chip{padding:8px 14px;border-radius:18px;border:1px solid var(--bd);background:var(--glass);font-size:13px;font-weight:500}
+.note .btn{display:inline-block}
+.hb{display:flex;gap:8px}
+.tg{position:relative}
+.tg b{position:absolute;top:-4px;right:-4px;background:var(--ok);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;font-weight:700}
+</style></head>
+<body>
+<header><div class="hrow"><h1 id="bn">Dr Apple Admin</h1><div class="hb"><button class="tg" id="bell" onclick="openBell()" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7.5 2 7.5H4S6 15 6 9z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><b id="bb" style="display:none"></b></button><button class="tg" id="tg" onclick="theme()" aria-label="Toggle light or dark"><svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></div></div>
+  <div class="tabs" id="tabs"></div></header>
+<main id="main"></main>
+<div class="ov" id="ov" onclick="if(event.target===this)closeSh()"><div class="sh" id="sh"></div></div>
+
+<script>
+// Leave blank = test mode (data stays in this browser). Paste your Firebase web config to go online.
+const CFG={apiKey:"",authDomain:"",projectId:"",appId:""};
+
+const $=s=>document.querySelector(s),fmt=n=>'₦'+Math.round(n||0).toLocaleString('en-NG');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+if(localStorage.getItem('t'))document.documentElement.dataset.t=localStorage.getItem('t');
+
+function local(){const L={},rd=c=>ld('dr_'+c,{}),em=c=>(L[c]||[]).forEach(f=>f(Object.entries(rd(c)).map(([id,d])=>({id,...d}))));
+  addEventListener('storage',e=>e.key&&e.key.startsWith('dr_')&&em(e.key.slice(3)));
+  return{watch:(c,f)=>{(L[c]=L[c]||[]).push(f);em(c)},
+    set:async(c,id,d)=>{const o=rd(c);o[id]={...o[id],...d};sv('dr_'+c,o);em(c)},
+    del:async(c,id)=>{const o=rd(c);delete o[id];sv('dr_'+c,o);em(c)}}}
+async function initDB(){
+  if(!CFG.projectId)return local();
+  const A=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+        F=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'),
+        db=F.getFirestore(A.initializeApp(CFG));
+  return{watch:(c,f)=>F.onSnapshot(F.collection(db,c),s=>f(s.docs.map(d=>({id:d.id,...d.data()})))),
+    set:(c,id,d)=>F.setDoc(F.doc(db,c,id),d,{merge:true}),del:(c,id)=>F.deleteDoc(F.doc(db,c,id))}}
+
+let DB,P=[],O=[],C=[],R=[],N=[],bellOpen=false,ST={name:'Dr Apple',deliveryFee:0,pickupAddress:''},tab='dash',of='todo',rf='pending',imgs=[],opts=[],specs=[],eid=null,cur=null,Q={prod:'',ord:'',ref:'',cpn:''};
+const TABS={dash:'Dashboard',prod:'Products',ord:'Orders',ref:'Refunds',cpn:'Coupons',set:'Settings'};
+const DS=['not_shipped','processing','dispatched','out_for_delivery','delivered'],PS=['processing','ready_for_pickup','picked_up'];
+const TG={Hot:'🔥',Sale:'🏷️',New:'✨',Limited:'⏳'};
+const OPT={Phones:[{name:'Color',values:['Black','Blue','Silver']},{name:'Memory',values:['128GB','256GB']}],Tablets:[{name:'Memory',values:['64GB','128GB']}],Laptops:[{name:'RAM',values:['8GB','16GB']}],Audio:[{name:'Color',values:['Black','White']}],Wearables:[{name:'Color',values:['Black','Pink','Silver']}]};
+const cm=n=>n?Number(n).toLocaleString('en-US'):'',num=s=>Number(String($(s).value).replace(/\D/g,''))||0;
+// Commas appear automatically while typing in any price field
+document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.classList.contains('money'))return;
+  const before=t.value.slice(0,t.selectionStart).replace(/\D/g,'').length,d=t.value.replace(/\D/g,'');
+  t.value=d?Number(d).toLocaleString('en-US'):'';let c=0,i=0;if(before)for(;i<t.value.length&&c<before;i++)if(/\d/.test(t.value[i]))c++;t.setSelectionRange(i,i)});
+const cdesc=c=>({percent:`${c.value}% off`,freedel:'Free delivery',free:`Free ${c.item||'gift'}`,other:c.item||'Special offer'}[c.type]||'')+(c.minOrder?` on any order above ${fmt(c.minOrder)}`:'');
+const gen=()=>'DA'+Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+
+function ph(e,a,b){const s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="400" height="400" fill="url(#g)"/><text x="200" y="255" font-size="170" text-anchor="middle">${e}</text></svg>`;return'data:image/svg+xml;utf8,'+encodeURIComponent(s)}
+const PAL={Phones:['#1e2a44','#5a7bd8'],Tablets:['#3b2a1a','#d9a066'],Laptops:['#0f3d3e','#35b6a8'],Audio:['#3a1c5c','#c45bd8'],Wearables:['#4a1020','#e0556f'],Accessories:['#4a2c0a','#e6a23c'],Gaming:['#1b1b3a','#7c4dff'],Cameras:['#262626','#8f8f8f'],'Smart Home':['#0e3b4f','#3cc3e0'],Gadgets:['#2d3a1c','#8cc152']};
+const SEED=[
+['Samsung Galaxy S21 FE 5G','Phones','Hot',284380,320000,14,188,'📱','Bright 120Hz display and a pro-grade camera.'],
+['iPhone 13 128GB','Phones','Hot',650000,720000,9,142,'📱','A15 chip, dual cameras and all-day battery.'],
+['Tecno Spark 20 Pro','Phones','Sale',145000,170000,30,310,'📱','Big 6.78" screen with a 108MP camera.'],
+['Infinix Hot 40 Pro','Phones','Sale',135000,158000,28,276,'📱','Smooth 120Hz display and fast charging.'],
+['Xiaomi Redmi Note 13','Phones','New',175000,0,22,64,'📱','AMOLED screen and a 108MP main camera.'],
+['Google Pixel 7a','Phones','',420000,0,7,38,'📱','Clean Android with an excellent camera.'],
+['iPad 10th Gen 10.9"','Tablets','New',520000,0,8,41,'📲','Colourful display, A14 chip, USB-C.'],
+['Samsung Galaxy Tab A9+','Tablets','Sale',215000,245000,12,57,'📲','11" screen and quad speakers.'],
+['Lenovo Tab M10','Tablets','',128000,0,15,33,'📲','Great for school, video and reading.'],
+['15.6" Slim Laptop, Core i7','Laptops','New',485000,0,6,25,'💻','Fast, light, perfect for work. Windows 11.'],
+['HP Pavilion 15, Ryzen 5','Laptops','',560000,0,5,19,'💻','16GB RAM, 512GB SSD, FHD display.'],
+['MacBook Air M1 13"','Laptops','Hot',890000,980000,4,52,'💻','Silent, fast and up to 18 hours of battery.'],
+['Lenovo IdeaPad 3 14"','Laptops','Sale',395000,440000,10,46,'💻','Slim everyday laptop with a 256GB SSD.'],
+['Dell Inspiron 15','Laptops','',520000,0,6,22,'💻','Core i5, 8GB RAM and a roomy keyboard.'],
+['Wireless Earbuds Pro','Audio','Sale',18500,25000,40,321,'🎧','Noise-cancelling, 30 hours of battery.'],
+['Over-Ear Noise-Cancelling Headphones','Audio','Hot',48000,62000,18,134,'🎧','Deep bass and 40 hours of playtime.'],
+['Portable Bluetooth Speaker','Audio','',22000,0,30,64,'🔊','Waterproof with deep bass, 12 hours of play.'],
+['2.1 Soundbar for TV','Audio','',65000,0,9,28,'📻','Wireless subwoofer and HDMI ARC.'],
+['AirPods Pro (2nd Gen)','Audio','Hot',185000,210000,11,87,'🎧','Active noise cancellation, USB-C case.'],
+['RGB Gaming Headset','Audio','New',24000,0,25,40,'🎧','7.1 surround with a clear boom mic.'],
+['Smart Watch Series 8','Wearables','Hot',32000,45000,25,97,'⌚','Heart rate, sleep tracking, 7-day battery.'],
+['Fitness Band 7','Wearables','Sale',9500,13000,50,260,'⌚','Steps, heart rate and 14-day battery.'],
+['Apple Watch SE','Wearables','',210000,0,6,31,'⌚','Fitness, safety features and crash detection.'],
+['Kids GPS Smart Watch','Wearables','New',18000,0,20,44,'⌚','Calls, GPS tracking and SOS button.'],
+['Bluetooth Smart Glasses','Wearables','Limited',29000,0,8,17,'🕶️','Open-ear audio with polarised lenses.'],
+['20,000mAh Power Bank','Accessories','Sale',12500,16000,60,540,'🔋','Charges two phones at once, fast charging.'],
+['65W Fast Charger','Accessories','',9800,0,45,120,'🔌','Charges phones and laptops quickly.'],
+['USB-C Cable 3-Pack','Accessories','',4200,0,80,310,'🔗','Braided, durable and fast charging.'],
+['Phone Pouch & Case Bundle','Accessories','Limited',4500,6000,100,210,'👜','Protective case plus a soft pouch.'],
+['Tempered Glass Protector (3-pack)','Accessories','',2500,0,120,430,'🛡️','9H hardness with easy-fit tray.'],
+['Anti-Theft Laptop Backpack','Accessories','',15500,0,20,58,'🎒','Water-resistant with a USB charging port.'],
+['Wireless Charger Pad','Accessories','New',8500,0,35,72,'⚡','15W fast wireless charging.'],
+['PlayStation 5 Console','Gaming','Hot',780000,850000,3,29,'🎮','Ultra-fast SSD and 4K gaming.'],
+['Xbox Series S','Gaming','',420000,0,5,21,'🎮','Digital console with Game Pass ready.'],
+['Wireless Game Controller','Gaming','Sale',18500,24000,30,95,'🎮','Low-latency and works on phone and PC.'],
+['RGB Gaming Mouse','Gaming','',9500,0,40,88,'🖱️','12,000 DPI with programmable buttons.'],
+['Mechanical Keyboard RGB','Gaming','New',21000,0,18,35,'⌨️','Hot-swappable switches and per-key lighting.'],
+['Nintendo Switch OLED','Gaming','Limited',380000,0,4,26,'🕹️','Vivid 7" OLED screen for home or travel.'],
+['4K Action Camera','Cameras','Hot',38000,52000,16,73,'🎥','Waterproof with image stabilisation.'],
+['Instant Photo Camera','Cameras','Limited',62000,0,6,18,'📸','Prints pocket-size photos on the spot.'],
+['Mini Dash Cam 1080p','Cameras','Sale',17500,22000,24,66,'📹','Night vision, loop recording, wide angle.'],
+['Ring Light with Tripod','Cameras','',14500,0,22,54,'💡','Perfect for videos, makeup and selfies.'],
+['Smart WiFi Bulb 4-Pack','Smart Home','',12000,0,30,47,'💡','Colour changing, voice and app control.'],
+['WiFi Security Camera','Smart Home','Sale',16500,21000,20,83,'📹','1080p, night vision, motion alerts.'],
+['Smart Plug 2-Pack','Smart Home','',6500,0,40,61,'🔌','Control appliances from your phone.'],
+['Robot Vacuum Cleaner','Smart Home','New',95000,0,7,15,'🤖','Smart mapping and app control.'],
+['Mini RC Drone with Camera','Gadgets','New',28166,35000,12,678,'🚁','Foldable drone with HD camera and gestures.'],
+['Mini Projector 1080p','Gadgets','Hot',78000,95000,10,49,'📽️','Home cinema on any wall, WiFi and Bluetooth.'],
+['300W Portable Power Station','Gadgets','New',285000,0,5,12,'☀️','Solar-ready backup power for lights and fans.'],
+['6" E-Reader','Gadgets','',54000,0,9,23,'📖','Glare-free screen, weeks of battery.']];
+if(SEED.length!==50)console.warn('SEED count',SEED.length);
+function seed(){
+  SEED.forEach((s,i)=>{const c=PAL[s[1]]||['#333','#999'];DB.set('products','S'+(i+1),{name:s[0],category:s[1],tag:s[2],price:s[3],oldPrice:s[4],stock:s[5],sold:s[6],images:[ph(s[7],c[0],c[1]),ph(s[7],c[1],c[0])],desc:s[8],active:true,options:OPT[s[1]]||[],specs:[{k:'Condition',v:'Brand new'},{k:'Warranty',v:'12 months'}],noRefund:/Protector|Pouch/.test(s[0])})});
+  [['K1',{code:'FREESHIP',type:'freedel',value:0,item:'',minOrder:0,limit:0,creator:'',perCustomer:false}],['K2',{code:'BIG5',type:'percent',value:5,item:'',minOrder:500000,limit:0,creator:'',perCustomer:true}],['K3',{code:'TUNDE10',type:'percent',value:10,item:'',minOrder:0,limit:20,creator:'@tunde_tech',perCustomer:true}]]
+   .forEach(([id,d])=>DB.set('coupons',id,{...d,expiresAt:0,reward:false,active:true,used:0,usedBy:[],createdAt:Date.now()}))}
+
+(async()=>{DB=await initDB();
+  DB.watch('products',a=>{P=a;if(!CFG.projectId&&ld('seedv',0)<3){sv('seedv',3);seed()}render()});
+  DB.watch('orders',a=>{O=a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));render()});
+  DB.watch('refunds',a=>{R=a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));render()});
+  DB.watch('notifications',a=>{N=a;badge();notifyNew(mineN());if(bellOpen)openBell()});
+  DB.watch('coupons',a=>{C=a;render()});
+  DB.watch('settings',a=>{const s=a.find(x=>x.id==='store');if(s){ST={...ST,...s};$('#bn').textContent=ST.name+' Admin'}render()});
+  render();
+})();
+
+const NK=c=>((c&&(c.email||c.phone))||'').toLowerCase(),fn=c=>((c&&c.name)||'there').trim().split(' ')[0];
+const itx=a=>(a||[]).map(i=>i.name+(i.opts?' ('+i.opts+')':'')+' ×'+i.qty).join(', ');
+const MSG={
+ placed:o=>({subject:`Order ${o.id} confirmed`,body:`Dear ${fn(o.customer)}, thank you for your order! We have received your payment of ${fmt(o.amountPaid)} for order ${o.id} (${itx(o.items)}). We will let you know as soon as it is being processed. Thank you for shopping with ${ST.name||'Dr Apple'}.`}),
+ status:(o,s)=>{const t={processing:'is now being processed. We are getting your items ready.',dispatched:'has been dispatched and is on its way to you.',out_for_delivery:'is out for delivery. Please keep your phone close so our rider can reach you.',delivered:'has been delivered. We hope you love it! If anything is wrong, you can request a refund from your Account page.',ready_for_pickup:`is ready for pickup at ${o.pickupAddress||'the store'}. Please bring your order number.`,picked_up:'has been picked up. Thank you, we hope you enjoy it!'}[s];return t?{subject:`Order ${o.id}: ${s.replace(/_/g,' ')}`,body:`Dear ${fn(o.customer)}, your order ${o.id} ${t}`}:null},
+ refReq:r=>({subject:'We received your refund request',body:`Dear ${fn(r.customer)}, we are truly sorry that something was wrong with your order. Your refund request ${r.id} for ${itx(r.items)} (${fmt(r.amount)}) on order ${r.orderId} has been received. Our team will review it and update you very soon.`}),
+ refOk:r=>({subject:'Your refund has been approved',body:`Dear ${fn(r.customer)}, good news! Your refund request ${r.id} for ${fmt(r.amount)} has been approved. The money is being sent back to the account you paid from, and it can take a few business days to show up. What to do next: nothing, just keep an eye on your account. If it has not arrived after a few business days, contact us with your order number ${r.orderId}.${r.note?' Note from us: '+r.note:''}`}),
+ refNo:r=>({subject:'About your refund request',body:`Dear ${fn(r.customer)}, we are very sorry. After reviewing your refund request ${r.id} for order ${r.orderId}, we are unable to approve it. Reason: ${r.note}. If you think this is a mistake, please contact us with more details or photos and we will gladly take another look.`}),
+ adminOrder:o=>({subject:`New order ${o.id}`,body:`New order ${o.id} from ${o.customer.name} (${o.customer.email||o.customer.phone}): ${itx(o.items)}. Total ${fmt(o.total)}, paid. ${o.fulfil==='pickup'?'Customer will pick up.':'Deliver to: '+o.deliveryAddress}`}),
+ adminRef:r=>({subject:`New refund request ${r.id}`,body:`${r.customer.name} requested a refund of ${fmt(r.amount)} on order ${r.orderId}: ${itx(r.items)}. Reason: ${r.reason}. They say: "${r.details}". Review it in the Refunds tab.`})};
+function notify(to,m,x){if(!m||!to)return;const id='N'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return DB.set('notifications',id,{id,to,title:m.subject,body:m.body,createdAt:Date.now(),read:false,...x})}
+const ago=t=>{const m=Math.floor((Date.now()-t)/6e4);return m<1?'just now':m<60?m+'m ago':m<1440?Math.floor(m/60)+'h ago':Math.floor(m/1440)+'d ago'};
+let firstN=true,shown=new Set(ld('shownN',[]));
+const permOk=()=>typeof Notification!=='undefined';
+function askPerm(){if(permOk())Notification.requestPermission().then(()=>{typeof drawBell==='function'&&drawBell()})}
+document.addEventListener('click',()=>{if(permOk()&&Notification.permission==='default'&&!ld('asked',0)){sv('asked',1);Notification.requestPermission()}},{once:true});
+function fire(n){if(permOk()&&Notification.permission==='granted'){try{new Notification(n.title,{body:n.body.slice(0,200),tag:n.id})}catch(e){}}toast('🔔 '+n.title)}
+function notifyNew(list){const un=list.filter(n=>!n.read);if(firstN){firstN=false;un.forEach(n=>shown.add(n.id))}else un.filter(n=>!shown.has(n.id)).forEach(n=>{shown.add(n.id);fire(n)});sv('shownN',[...shown])}
+const permBox=()=>!permOk()?'':Notification.permission==='default'?'<div class="note">Turn on browser notifications to get these as they happen.<button class="btn" style="margin-top:10px" onclick="askPerm()">Turn on notifications</button></div>':Notification.permission==='denied'?'<div class="sd" style="margin:8px 0">Browser notifications are blocked, so alerts only show here.</div>':'';
+const ntList=l=>l.map(n=>`<div class="nt${n.read?'':' un'}" onclick="openN('${n.id}')"><div class="nth"><b>${esc(n.title)}</b><span class="sd">${ago(n.createdAt)}</span></div><div class="ntb">${esc(n.body)}</div></div>`).join('')||'<div class="empty" style="padding:40px 0">No notifications yet.</div>';
+
+const mineN=()=>N.filter(n=>n.to==='admin').sort((a,b)=>b.createdAt-a.createdAt);
+function badge(){const u=mineN().filter(n=>!n.read).length,b=$('#bb');b.style.display=u?'block':'none';b.textContent=u;document.title=(u?'('+u+') ':'')+'Dr Apple Admin'}
+function openBell(){bellOpen=true;const my=mineN();sh(`<div class="top2"><h2>Notifications</h2>${my.some(n=>!n.read)?'<button class="chip" onclick="readAll()">Mark all read</button>':''}</div>${permBox()}${ntList(my)}`)}
+function drawBell(){if(bellOpen)openBell()}
+function readAll(){mineN().filter(n=>!n.read).forEach(n=>DB.set('notifications',n.id,{read:true}))}
+function openN(id){const n=N.find(x=>x.id===id);if(!n)return;if(!n.read)DB.set('notifications',id,{read:true});bellOpen=false;if(n.refundId){go('ref');openRef(n.refundId)}else if(n.orderId)openOrd(n.orderId)}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2400)}
+function sh(h){$('#sh').innerHTML=h;$('#ov').classList.add('on')}
+function closeSh(){bellOpen=false;$('#ov').classList.remove('on')}
+function go(t){tab=t;render()}
+const bar=(k,p)=>`<input class="f sbar" placeholder="${p}" value="${esc(Q[k])}" oninput="Q.${k}=this.value;drawList()">`;
+function drawList(){const e=$('#lst');if(e)e.innerHTML=({prod:lProd,ord:lOrd,ref:lRef,cpn:lCpn}[tab]||(()=>''))()}
+const chips=(cur,list,fn)=>`<div class="chips">${list.map(([k,v])=>`<button class="${cur===k?'on':''}" onclick="${fn}='${k}';render()">${v}</button>`).join('')}</div>`;
+function render(){
+  const ae=document.activeElement;if(ae&&ae.closest('#main')&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)){if(ae.classList.contains('sbar'))drawList();return}
+  const pend=R.filter(r=>r.status==='pending').length;
+  $('#tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${k===tab?'on':''}" onclick="go('${k}')">${v}${k==='ref'&&pend?' ('+pend+')':''}</button>`).join('');
+  const note=CFG.projectId?'':'<div class="note">Test mode: data is saved in this browser only. Open the shop from the same address and browser to see your products.</div>';
+  const todo=O.filter(o=>!done(o)).length,fin=O.length-todo,cnt=s=>R.filter(r=>r.status===s).length;
+  const H={dash:rDash,set:rSet,
+    prod:()=>`<div class="top"><h2>Products</h2><button class="btn" onclick="openProd()">+ Add product</button></div>${bar('prod','Search products by name')}<div id="lst"></div>`,
+    ord:()=>`<div class="top"><h2>Orders</h2></div>${chips(of,[['todo','To process ('+todo+')'],['done','Completed ('+fin+')'],['all','All']],'of')}${bar('ord','Search by order number')}<div id="lst"></div>`,
+    ref:()=>`<div class="top"><h2>Refund requests</h2></div>${chips(rf,[['pending','Pending ('+cnt('pending')+')'],['refunded','Refunded ('+cnt('refunded')+')'],['denied','Denied ('+cnt('denied')+')'],['all','All']],'rf')}${bar('ref','Search by order number')}<div id="lst"></div>`,
+    cpn:()=>`<div class="top"><h2>Coupons &amp; promo codes</h2><button class="btn" onclick="openCpn()">+ New code</button></div>${bar('cpn','Search by code or creator')}<div id="lst"></div>`}[tab];
+  $('#main').innerHTML=note+H();drawList();
+}
+const pimg=id=>{const p=P.find(x=>x.id===id);return p&&p.images&&p.images[0]};
+const thumb=(id,sz)=>`<div class="th"${sz?` style="width:${sz}px;height:${sz}px"`:''}>${pimg(id)?`<img src="${pimg(id)}" alt="">`:'No photo'}</div>`;
+const done=o=>o.deliveryStatus==='delivered'||o.deliveryStatus==='picked_up',stat=o=>(o.deliveryStatus||'').replace(/_/g,' ');
+const rlab=r=>({pending:'Pending review',refunded:'Refunded',denied:'Denied'}[r.status]||r.status);
+const when=t=>new Date(t||Date.now()).toLocaleString('en-NG',{dateStyle:'medium',timeStyle:'short'});
+
+function rDash(){
+  const rev=O.reduce((s,o)=>s+(o.amountPaid||0)-(o.refundedAmount||0),0),act=P.filter(p=>p.active!==false),low=act.filter(p=>p.stock<=5);
+  return `<div class="stats"><div class="stat"><small>Revenue (after refunds)</small><b>${fmt(rev)}</b></div><div class="stat"><small>Orders to process</small><b>${O.filter(o=>!done(o)).length}</b></div><div class="stat"><small>Refunds to review</small><b>${R.filter(r=>r.status==='pending').length}</b></div><div class="stat"><small>Units in stock</small><b>${act.reduce((s,p)=>s+(p.stock||0),0)}</b></div></div>
+  ${low.length?`<h2 style="margin-bottom:6px">Running low</h2>${low.map(p=>`<div class="row click" onclick="openProd('${p.id}')">${thumb(p.id)}<div class="grow"><div class="nm">${esc(p.name)}</div><div class="sd">${p.stock>0?p.stock+' left':'Sold out'}</div></div><button class="ic" onclick="event.stopPropagation();restock('${p.id}')" aria-label="Add stock">＋</button></div>`).join('')}`:''}`}
+
+function lOrd(){
+  const q=Q.ord.trim().toLowerCase(),l=O.filter(o=>(of==='all'||(of==='todo')===!done(o))&&(!q||o.id.toLowerCase().includes(q)||(o.customer?.name||'').toLowerCase().includes(q)));
+  return l.map(o=>{const it=o.items||[];return `<div class="row click" onclick="openOrd('${o.id}')">${thumb(it[0]&&it[0].id)}<div class="grow"><div class="nm">${esc(it[0]?it[0].name:'')}${it.length>1?' +'+(it.length-1)+' more':''}</div><div class="sd">${esc(o.id)} · ${esc(o.customer?.name||'')} · ${o.fulfil==='pickup'?'🏬 Pickup':'🚚 Delivery'}</div><div class="sd"><b>${esc(stat(o))}</b></div></div><b>${fmt(o.total)}</b></div>`}).join('')||'<div class="sd" style="padding:30px 0;text-align:center">Nothing here.</div>'}
+function openOrd(id){
+  const o=O.find(x=>x.id===id);if(!o)return;cur=id;const pk=o.fulfil==='pickup',st=pk?PS:DS,rs=R.filter(r=>r.orderId===id);
+  sh(`<h2>${esc(o.id)}</h2><div class="sd">${pk?'🏬 Pickup order':'🚚 Delivery order'} · ${when(o.createdAt)}</div>
+  <label>Items to pick</label>${(o.items||[]).map(i=>`<div class="row">${thumb(i.id,64)}<div class="grow"><div class="nm">${esc(i.name)}</div>${i.opts?`<div class="sd"><b>${esc(i.opts)}</b></div>`:''}<div class="sd">${fmt(i.price)} each</div></div><b style="font-size:22px">×${i.qty}</b></div>`).join('')}
+  <div style="margin-top:10px"><div class="drow"><span>Customer</span><span>${esc(o.customer?.name)}<br>${esc(o.customer?.email)} ${esc(o.customer?.phone)}</span></div>
+  <div class="drow"><span>${pk?'Pickup at':'Address'}</span><span>${esc(pk?(o.pickupAddress||'The store'):o.deliveryAddress)}</span></div>
+  ${o.coupon?`<div class="drow"><span>Promo</span><span>${esc(o.coupon.code)} · ${esc(o.coupon.perk)}</span></div>`:''}
+  <div class="drow"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>${o.discount?`<div class="drow"><span>Discount</span><span>−${fmt(o.discount)}</span></div>`:''}
+  <div class="drow"><span>${pk?'Pickup':'Delivery'}</span><span>${o.deliveryFee?fmt(o.deliveryFee):'Free'}</span></div><div class="drow"><span>Total paid</span><span>${fmt(o.total)}</span></div>
+  ${rs.map(r=>`<div class="drow"><span>Refund ${esc(r.id)}</span><span>${rlab(r)}</span></div>`).join('')}</div>
+  <label>Status</label><select class="f" id="ds">${st.map(s=>`<option ${o.deliveryStatus===s?'selected':''} value="${s}">${s.replace(/_/g,' ')}</option>`).join('')}</select>
+  <div style="display:flex;gap:8px;margin-top:16px"><button class="btn o" style="flex:1" onclick="closeSh()">Close</button><button class="btn" style="flex:1" onclick="saveDs()">Save status</button></div>`)}
+async function saveDs(){const o=O.find(x=>x.id===cur),s=$('#ds').value;await DB.set('orders',cur,{deliveryStatus:s});if(o&&s!==o.deliveryStatus)notify(NK(o.customer),MSG.status({...o,deliveryStatus:s},s),{orderId:o.id});closeSh();toast('Status saved ✓')}
+
+function lRef(){
+  const q=Q.ref.trim().toLowerCase(),l=R.filter(r=>(rf==='all'||r.status===rf)&&(!q||r.orderId.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)));
+  return l.map(r=>{const it=r.items||[];return `<div class="row click" onclick="openRef('${r.id}')">${thumb(it[0]&&it[0].id)}<div class="grow"><div class="nm">${esc(it[0]?it[0].name:'')}${it.length>1?' +'+(it.length-1)+' more':''}</div><div class="sd">${esc(r.orderId)} · ${esc(r.reason)}</div><div class="sd"><b>${rlab(r)}</b> · ${when(r.createdAt)}</div></div><b>${fmt(r.amount)}</b></div>`}).join('')||'<div class="sd" style="padding:30px 0;text-align:center">No refund requests here.</div>'}
+function openRef(id){
+  const r=R.find(x=>x.id===id);if(!r)return;cur=id;
+  sh(`<h2>Refund ${esc(r.id)}</h2><div class="sd">Order ${esc(r.orderId)} · ${when(r.createdAt)}</div>
+  <label>Product(s) to refund</label>${(r.items||[]).map(i=>`<div class="row">${thumb(i.id,56)}<div class="grow"><div class="nm">${esc(i.name)}</div>${i.opts?`<div class="sd">${esc(i.opts)}</div>`:''}</div><b>×${i.qty}</b></div>`).join('')}
+  <div style="margin-top:10px"><div class="drow"><span>Reason</span><span>${esc(r.reason)}</span></div><div class="drow"><span>Customer says</span><span>${esc(r.details)}</span></div>
+  <div class="drow"><span>Customer</span><span>${esc(r.customer?.name)}<br>${esc(r.customer?.email)} ${esc(r.customer?.phone)}</span></div><div class="drow"><span>Refund amount</span><span>${fmt(r.amount)}</span></div><div class="drow"><span>Status</span><span>${rlab(r)}</span></div>
+  ${r.note?`<div class="drow"><span>Your note</span><span>${esc(r.note)}</span></div>`:''}${r.refundRef?`<div class="drow"><span>Refund ref</span><span>${esc(r.refundRef)}</span></div>`:''}</div>
+  ${r.status==='pending'?`<label>Note to customer (required if you deny)</label><input class="f" id="rn" placeholder="e.g. item was used, outside our policy"><div style="display:flex;gap:8px;margin-top:16px"><button class="btn o" style="flex:1" onclick="decide(false)">Deny</button><button class="btn" style="flex:1" onclick="decide(true)">Approve &amp; refund</button></div>`:'<button class="btn o" style="width:100%;margin-top:14px" onclick="closeSh()">Close</button>'}`)}
+async function decide(ok){
+  const r=R.find(x=>x.id===cur),note=$('#rn').value.trim();
+  if(!ok&&!note)return toast('Please add the reason for denying');
+  if(!ok)await DB.set('refunds',cur,{status:'denied',note,decidedAt:Date.now()});
+  else{ // LIVE: call your server function here so Paystack refunds this order's payment reference to the original account
+    await DB.set('refunds',cur,{status:'refunded',note,decidedAt:Date.now(),refundRef:'TEST-RF-'+Date.now().toString(36).toUpperCase()});
+    const o=O.find(x=>x.id===r.orderId);if(o)await DB.set('orders',o.id,{refundedAmount:(o.refundedAmount||0)+r.amount})}
+  const r2={...r,note,status:ok?'refunded':'denied'};notify(NK(r.customer),ok?MSG.refOk(r2):MSG.refNo(r2),{orderId:r.orderId,refundId:r.id});
+  closeSh();toast(ok?'Refund approved and sent back (test)':'Refund denied')}
+
+function lProd(){
+  const q=Q.prod.trim().toLowerCase();
+  return P.filter(p=>p.active!==false&&(!q||(p.name||'').toLowerCase().includes(q))).map(p=>`<div class="row">${thumb(p.id)}<div class="grow"><div class="nm">${esc(p.name)}</div><div class="sd">${esc(p.category)} · ${fmt(p.price)} · ${p.stock>0?p.stock+' in stock':'<b>Sold out</b>'}${p.noRefund?' · no refunds':''}</div></div>${p.tag?`<span class="tag">${TG[p.tag]||''} ${esc(p.tag)}</span>`:''}<button class="ic" onclick="restock('${p.id}')" aria-label="Add stock">＋</button><button class="ic" onclick="openProd('${p.id}')" aria-label="Edit">✎</button><button class="ic" onclick="delProd('${p.id}')" aria-label="Delete">🗑</button></div>`).join('')||'<div class="sd" style="padding:30px 0;text-align:center">No products found.</div>'}
+async function restock(id){const n=parseInt(prompt('How many units did you receive?'),10);if(!(n>0))return;const p=P.find(x=>x.id===id);await DB.set('products',id,{stock:(p.stock||0)+n});toast('+'+n+' added to stock ✓')}
+function addStock(){const n=parseInt(prompt('How many units are you adding?'),10);if(n>0){$('#ps').value=(Number($('#ps').value)||0)+n;toast('+'+n+' added. Press Save.')}}
+function openProd(id){
+  eid=id||null;const p=id?P.find(x=>x.id===id):{};imgs=[...(p.images||[])];opts=JSON.parse(JSON.stringify(p.options||[]));specs=JSON.parse(JSON.stringify(p.specs||[]));
+  const cats=[...new Set(P.map(x=>x.category).filter(Boolean))];
+  sh(`<h2>${id?'Edit product':'Add product'}</h2>
+  <label>Photos (up to 4)</label><div class="imgs" id="im"></div>
+  <input type="file" id="fi" accept="image/*" multiple style="display:none" onchange="addImgs(this)">
+  <button class="btn o" style="margin-top:8px" onclick="$('#fi').click()">Take or choose photos</button>
+  <label>Name</label><input class="f" id="pn" value="${esc(p.name)}" placeholder="Samsung Galaxy S21 FE">
+  <div class="two"><div><label>Category</label><input class="f" id="pc" list="cl" value="${esc(p.category)}" placeholder="Phones"><datalist id="cl">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>
+  <div><label>Tag</label><select class="f" id="pt">${['','Hot','Sale','New','Limited'].map(t=>`<option ${p.tag===t?'selected':''} value="${t}">${t?(TG[t]+' '+t):'None'}</option>`).join('')}</select></div></div>
+  <div class="sd" style="margin-top:6px">Limited shows "Only N left" on the shop, but only when stock is 5 or fewer.</div>
+  <div class="two"><div><label>Price (₦)</label><input class="f money" id="pp" inputmode="numeric" value="${cm(p.price)}" placeholder="0"></div><div><label>Old price (₦, optional)</label><input class="f money" id="po" inputmode="numeric" value="${cm(p.oldPrice)}" placeholder="0"></div></div>
+  <label>Stock quantity</label><div style="display:flex;gap:8px"><input class="f" id="ps" type="number" min="0" value="${p.stock??''}" style="margin-top:6px"><button class="btn o" style="margin-top:6px;white-space:nowrap;padding:0 16px" onclick="addStock()">＋ Add</button></div>
+  <label>Options customers choose (colour, memory…)</label><div id="ox"></div><button class="btn o" style="margin-top:8px;width:100%" onclick="opts.push({name:'',values:[]});drawOx()">+ Add option</button>
+  <label>Specifications</label><div id="sx"></div><button class="btn o" style="margin-top:8px;width:100%" onclick="specs.push({k:'',v:''});drawOx()">+ Add specification</button>
+  <label>Description</label><textarea class="f" id="pd" rows="3">${esc(p.desc)}</textarea>
+  <label class="chk"><input type="checkbox" id="pnr" ${p.noRefund?'checked':''}> Non-refundable product</label>
+  <div style="display:flex;gap:8px;margin-top:16px"><button class="btn o" style="flex:1" onclick="closeSh()">Cancel</button><button class="btn" style="flex:1" onclick="saveProd()">${id?'Save changes':'Create product'}</button></div>`);
+  drawImgs();drawOx();
+}
+function drawOx(){
+  $('#ox').innerHTML=opts.map((o,i)=>`<div class="orow"><input class="f" placeholder="Option (e.g. Color)" value="${esc(o.name)}" oninput="opts[${i}].name=this.value"><input class="f" placeholder="Values, comma separated" value="${esc((o.values||[]).join(', '))}" oninput="opts[${i}].values=this.value.split(',').map(x=>x.trim()).filter(Boolean)"><button class="ic" onclick="opts.splice(${i},1);drawOx()" aria-label="Remove">✕</button></div>`).join('');
+  $('#sx').innerHTML=specs.map((o,i)=>`<div class="orow"><input class="f" placeholder="e.g. Screen" value="${esc(o.k)}" oninput="specs[${i}].k=this.value"><input class="f" placeholder='e.g. 6.4" AMOLED' value="${esc(o.v)}" oninput="specs[${i}].v=this.value"><button class="ic" onclick="specs.splice(${i},1);drawOx()" aria-label="Remove">✕</button></div>`).join('')}
+function drawImgs(){$('#im').innerHTML=imgs.map((u,i)=>`<div><img src="${u}" alt=""><button onclick="imgs.splice(${i},1);drawImgs()">✕</button></div>`).join('')}
+function shrink(file,max=640){return new Promise(res=>{const i=new Image,u=URL.createObjectURL(file);i.onload=()=>{const s=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.72))};i.src=u})}
+async function addImgs(inp){for(const f of[...inp.files]){if(imgs.length>=4){toast('Max 4 photos');break}imgs.push(await shrink(f));drawImgs()}inp.value=''}
+async function saveProd(){
+  const name=$('#pn').value.trim(),price=num('#pp');
+  if(!name||!price)return toast('Add a name and price');
+  const id=eid||'P'+Date.now().toString(36);
+  await DB.set('products',id,{name,category:$('#pc').value.trim()||'General',tag:$('#pt').value,price,oldPrice:num('#po'),stock:Number($('#ps').value)||0,desc:$('#pd').value.trim(),images:imgs,active:true,
+    options:opts.filter(o=>o.name.trim()&&o.values.length).map(o=>({name:o.name.trim(),values:o.values})),specs:specs.filter(s=>s.k.trim()&&s.v.trim()),noRefund:$('#pnr').checked,sold:(P.find(x=>x.id===id)?.sold)||0});
+  closeSh();toast('Product saved ✓')}
+async function delProd(id){if(confirm('Delete this product?')){await DB.del('products',id);toast('Product deleted')}}
+
+const cst=c=>c.active===false?'Off':c.expiresAt&&Date.now()>c.expiresAt?'Expired':c.limit&&(c.used||0)>=c.limit?'Full':'Live';
+const left=ms=>{const m=Math.floor(ms/6e4);return m>=1440?Math.floor(m/1440)+'d left':m>=60?Math.floor(m/60)+'h left':Math.max(m,1)+'m left'};
+function lCpn(){
+  const q=Q.cpn.trim().toLowerCase();
+  return C.filter(c=>!q||c.code.toLowerCase().includes(q)||(c.creator||'').toLowerCase().includes(q)).map(c=>`<div class="row"><div class="grow"><div class="nm">${esc(c.code)} <span class="tag">${cst(c)}</span></div>${c.creator?`<div class="sd">🤝 ${esc(c.creator)}</div>`:''}<div class="sd">${esc(cdesc(c))}</div><div class="sd">Used ${c.used||0}${c.limit?' of '+c.limit+' slots':''}${c.expiresAt&&cst(c)==='Live'?' · '+left(c.expiresAt-Date.now()):''}${c.perCustomer!==false?' · 1 per customer':''}</div></div><button class="ic" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(c.code)}');toast('Code copied')" aria-label="Copy">⧉</button><button class="ic" onclick="togCpn('${c.id}')" aria-label="On or off">${c.active===false?'▶':'⏸'}</button><button class="ic" onclick="delCpn('${c.id}')" aria-label="Delete">🗑</button></div>`).join('')||'<div class="sd" style="padding:30px 0;text-align:center">No codes found.</div>'}
+function openCpn(){
+  sh(`<h2>New promo code</h2><label>Creator / brand partner (optional)</label><input class="f" id="kcr" placeholder="e.g. @tunde_tech">
+  <label>Code</label><div style="display:flex;gap:8px"><input class="f" id="kc" placeholder="e.g. TUNDE10" style="text-transform:uppercase"><button class="btn o" style="margin-top:6px;white-space:nowrap" onclick="$('#kc').value=gen()">Generate</button></div>
+  <label>What does it give?</label><select class="f" id="kt" onchange="ctype()"><option value="percent">% off the order</option><option value="freedel">Free delivery</option><option value="free">Free item (gift, pouch, anything)</option><option value="other">Other (describe it)</option></select>
+  <div id="kv"><label>Percent off</label><input class="f" id="kp" type="number" min="1" max="100" value="10"></div>
+  <div id="ki" style="display:none"><label id="kil">Free what?</label><input class="f" id="kn" placeholder="pouch"></div>
+  <label>Minimum order (₦, optional)</label><input class="f money" id="km" inputmode="numeric" placeholder="e.g. 500,000">
+  <label>Slots: only the first N customers (0 = unlimited)</label><input class="f" id="kl" type="number" min="0" value="20">
+  <label>How long does it work?</label><select class="f" id="kd2" onchange="$('#kd').style.display=this.value==='date'?'block':'none'">${[['0','No time limit'],['1','1 hour'],['6','6 hours'],['24','1 day'],['72','3 days'],['168','7 days'],['720','30 days'],['date','Pick an end date and time']].map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select>
+  <input class="f" id="kd" type="datetime-local" style="display:none">
+  <label class="chk"><input type="checkbox" id="kpc" checked> One use per customer</label>
+  <div style="display:flex;gap:8px;margin-top:16px"><button class="btn o" style="flex:1" onclick="closeSh()">Cancel</button><button class="btn" style="flex:1" onclick="saveCpn()">Create code</button></div>`);ctype()}
+function ctype(){const t=$('#kt').value;$('#kv').style.display=t==='percent'?'block':'none';$('#ki').style.display=t==='free'||t==='other'?'block':'none';$('#kil').textContent=t==='other'?'Describe the offer':'Free what? (e.g. pouch)'}
+async function saveCpn(){
+  const code=$('#kc').value.trim().toUpperCase(),type=$('#kt').value,value=Number($('#kp').value)||0,item=$('#kn').value.trim(),dv=$('#kd2').value;
+  if(!code)return toast('Add or generate a code');
+  if(C.some(c=>c.code===code))return toast('That code already exists');
+  if(type==='percent'&&(value<1||value>100))return toast('Percent must be 1 to 100');
+  if((type==='free'||type==='other')&&!item)return toast('Say what the customer gets');
+  let exp=0;if(dv==='date'){exp=new Date($('#kd').value).getTime();if(!exp||exp<Date.now())return toast('Pick a future end date')}else if(dv!=='0')exp=Date.now()+Number(dv)*36e5;
+  await DB.set('coupons','C'+Date.now().toString(36),{code,type,value:type==='percent'?value:0,item:type==='free'||type==='other'?item:'',minOrder:num('#km'),limit:Number($('#kl').value)||0,creator:$('#kcr').value.trim(),perCustomer:$('#kpc').checked,expiresAt:exp,reward:false,active:true,used:0,usedBy:[],createdAt:Date.now()});
+  closeSh();toast('Code created ✓')}
+async function togCpn(id){const c=C.find(x=>x.id===id);await DB.set('coupons',id,{active:c.active===false})}
+async function delCpn(id){if(confirm('Delete this code?'))await DB.del('coupons',id)}
+
+function rSet(){
+  return `<h2 style="margin-bottom:6px">Settings</h2><label>Store name</label><input class="f" id="sn" value="${esc(ST.name)}">
+  <label>Delivery fee (₦, 0 for free)</label><input class="f money" id="sf" inputmode="numeric" value="${cm(ST.deliveryFee)}" placeholder="0">
+  <label>Pickup address (shown to customers who choose pickup)</label><textarea class="f" id="sa" rows="2" placeholder="Shop 12, Main Market, Yola">${esc(ST.pickupAddress)}</textarea>
+  <button class="btn" style="margin-top:14px;width:100%" onclick="saveSet()">Save settings</button>
+  <button class="btn o" style="margin-top:10px;width:100%" onclick="seed();toast('Sample products and codes loaded')">Reload sample products</button>`}
+async function saveSet(){await DB.set('settings','store',{name:$('#sn').value.trim()||'Dr Apple',deliveryFee:num('#sf'),pickupAddress:$('#sa').value.trim()});toast('Saved ✓');document.activeElement.blur()}
+function theme(){const r=document.documentElement,d=r.dataset.t?r.dataset.t==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.t=d?'light':'dark';localStorage.setItem('t',r.dataset.t);const b=document.querySelector('#tg');if(b){b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin')}}
+</script>
+</body></html>
